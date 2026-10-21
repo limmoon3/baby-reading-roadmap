@@ -1,0 +1,24 @@
+{
+  "name": "아기 독서 로드맵",
+  "short_name": "아기독서",
+  "description": "아기 독서 및 교육 전집 인벤토리 & 주간 로드맵",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#2F5496",
+  "theme_color": "#2F5496",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
