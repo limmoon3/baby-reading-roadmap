@@ -1,4 +1,4 @@
-const CACHE_NAME = 'baby-reading-v1';
+const CACHE_NAME = 'baby-reading-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -27,7 +27,6 @@ self.addEventListener('fetch', event => {
   );
 });
 
-// 업데이트 알림
 self.addEventListener('message', event => {
   if (event.data === 'skipWaiting') self.skipWaiting();
 });
