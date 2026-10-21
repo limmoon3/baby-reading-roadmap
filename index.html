@@ -1,1 +1,715 @@
-PLACEHOLDER_FULL_APP
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="아기독서">
+<meta name="theme-color" content="#4F46E5">
+<title>아기 독서 로드맵</title>
+<style>
+:root {
+  --primary: #4F46E5;
+  --primary-light: #818CF8;
+  --accent: #F59E0B;
+  --bg: #F8FAFC;
+  --card: #FFFFFF;
+  --text: #1E293B;
+  --text-light: #64748B;
+  --border: #E2E8F0;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-lg: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding-bottom: 72px;
+}
+header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-light));
+  color: white;
+  padding: 20px 16px 24px;
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.02em; }
+header .subtitle { font-size: 0.85rem; opacity: 0.9; margin-top: 4px; font-weight: 400; }
+.tabs { display: flex; overflow-x: auto; background: white; border-bottom: 1px solid var(--border); position: sticky; top: 80px; z-index: 99; padding: 0 4px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; padding: 14px 18px; font-size: 0.9rem; font-weight: 500; color: var(--text-light); border: none; background: none; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; }
+.tab.active { color: var(--primary); border-bottom-color: var(--primary); font-weight: 600; }
+.container { padding: 16px; max-width: 600px; margin: 0 auto; }
+.section { display: none; }
+.section.active { display: block; }
+.card { background: var(--card); border-radius: 16px; padding: 16px; margin-bottom: 12px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+.book-title { font-weight: 600; font-size: 1rem; color: var(--text); }
+.book-meta { font-size: 0.8rem; color: var(--text-light); margin-top: 2px; }
+.badge { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; background: #EEF2FF; color: var(--primary); font-weight: 600; }
+.controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+select, input[type="text"], input[type="date"], input[type="number"], textarea { font-family: inherit; font-size: 0.9rem; padding: 10px 12px; border: 1px solid var(--border); border-radius: 12px; background: white; transition: border-color 0.2s; }
+select:focus, input:focus, textarea:focus { outline: none; border-color: var(--primary); }
+select { min-width: 100px; }
+.search-bar { position: sticky; top: 128px; z-index: 98; background: var(--bg); padding: 8px 0 16px; }
+.search-bar input { width: 100%; padding: 12px 16px; border-radius: 24px; border: 1px solid var(--border); font-size: 0.95rem; background: white; }
+.stats { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+.stat-box { flex: 1; min-width: 72px; background: white; border-radius: 14px; padding: 14px 8px; text-align: center; box-shadow: var(--shadow); border: 1px solid var(--border); }
+.stat-box .num { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+.stat-box .label { font-size: 0.7rem; color: var(--text-light); margin-top: 2px; }
+.week-item, .log-item, .plan-item, .rec-item { background: white; border-radius: 16px; padding: 16px; margin-bottom: 10px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+button.primary { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 0.95rem; transition: opacity 0.2s; }
+button.primary:active { opacity: 0.85; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; border-top: 1px solid var(--border); z-index: 100; padding: 6px 0 env(safe-area-inset-bottom); box-shadow: 0 -1px 3px rgba(0,0,0,0.05); }
+.bottom-nav button { flex: 1; padding: 8px 2px 6px; border: none; background: none; font-size: 0.65rem; color: var(--text-light); cursor: pointer; transition: color 0.2s; }
+.bottom-nav button.active { color: var(--primary); font-weight: 600; }
+.bottom-nav .icon { font-size: 1.4rem; display: block; margin-bottom: 2px; }
+.empty { text-align: center; color: var(--text-light); padding: 48px 20px; }
+.day-header { font-weight: 700; color: var(--primary); margin: 20px 0 10px; font-size: 1rem; }
+.rec-tag { display: inline-block; background: #FEF3C7; color: #D97706; font-size: 0.75rem; padding: 3px 10px; border-radius: 12px; margin-right: 4px; font-weight: 500; }
+</style>
+</head>
+<body>
+<header>
+  <h1>📚 아기 독서 로드맵</h1>
+  <div class="subtitle">2025.04.29 생 · 약 18개월 · 매일 플래너</div>
+</header>
+
+<div class="tabs" id="seriesTabs">
+  <button class="tab active" data-series="all">전체</button>
+  <button class="tab" data-series="yeonga">영아다중</button>
+  <button class="tab" data-series="malhagi">말하기</button>
+  <button class="tab" data-series="nobuyoung">노부영</button>
+  <button class="tab" data-series="aram">아람</button>
+  <button class="tab" data-series="nature">놀라운자연</button>
+  <button class="tab" data-series="dolhangeul">돌잡이한글</button>
+  <button class="tab" data-series="dolmath">돌잡이수학</button>
+  <button class="tab" data-series="doleng">돌잡이영어</button>
+  <button class="tab" data-series="dolart">돌잡이명화</button>
+</div>
+
+<div class="container">
+  <div class="section active" id="inventory">
+    <div class="search-bar"><input type="text" id="searchInput" placeholder="책 제목 검색..."></div>
+    <div class="stats" id="stats"></div>
+    <div id="bookList"></div>
+  </div>
+
+  <div class="section" id="letters">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">🔤 한글 & 알파벳</h2>
+    <div class="card">
+      <p style="font-size:0.85rem; color:var(--text-light);">문해 준비 단계 · 관심 보일 때 시작</p>
+    </div>
+    <div id="lettersContent"></div>
+  </div>
+
+  <div class="section" id="bilingual">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">🌍 다중언어 & 영어 노출</h2>
+    <div class="card">
+      <p style="font-size:0.85rem; color:var(--text-light);">18개월 언어 폭발기 · 보유 전집 활용</p>
+    </div>
+    <div id="bilingualContent"></div>
+  </div>
+
+  <div class="section" id="checklist">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">✅ 월별 체크리스트</h2>
+    <div class="card">
+      <select id="monthSelect" style="width:100%;" onchange="renderChecklist()">
+        <option value="18">18개월</option>
+        <option value="19">19개월</option>
+        <option value="20">20개월</option>
+        <option value="21">21개월</option>
+        <option value="22">22개월</option>
+        <option value="23">23개월</option>
+        <option value="24">24개월</option>
+        <option value="30">30개월</option>
+      </select>
+    </div>
+    <div id="checklistContent"></div>
+  </div>
+
+  <div class="section" id="roadmap">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">🗺️ 전체 로드맵</h2>
+    <div class="card">
+      <p style="font-size:0.85rem; color:var(--text-light);">18개월~ 언어 폭발기 기준 주간 가이드</p>
+    </div>
+    <div id="roadmapOverview"></div>
+  </div>
+
+  <div class="section" id="planner">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">📅 일일 플래너</h2>
+    <div class="card">
+      <input type="date" id="planDate" style="width:100%; margin-bottom:8px;">
+      <input type="text" id="planTitle" placeholder="오늘 읽을 책" style="width:100%; margin-bottom:8px;">
+      <select id="planSeries" style="width:100%; margin-bottom:8px;">
+        <option value="">전집 선택</option>
+        <option>영아다중</option><option>말하기</option><option>노부영</option>
+        <option>아람</option><option>놀라운자연</option><option>돌잡이한글</option>
+        <option>돌잡이수학</option><option>돌잡이영어</option><option>돌잡이명화</option>
+      </select>
+      <textarea id="planNote" placeholder="활동 메모 (예: 따라 말하기, 조작 놀이)" rows="2" style="width:100%; margin-bottom:8px;"></textarea>
+      <button class="primary" onclick="addPlan()" style="width:100%;">오늘 계획 추가</button>
+    </div>
+    <div id="planList"></div>
+  </div>
+
+  <div class="section" id="log">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">📝 매일 독서 기록</h2>
+    <div class="card">
+      <input type="date" id="logDate" style="width:100%; margin-bottom:8px;">
+      <input type="text" id="logTitle" placeholder="읽은 책 제목" style="width:100%; margin-bottom:8px;">
+      <select id="logSeries" style="width:100%; margin-bottom:8px;">
+        <option value="">전집 선택</option>
+        <option>영아다중</option><option>말하기</option><option>노부영</option>
+        <option>아람</option><option>놀라운자연</option><option>돌잡이한글</option>
+        <option>돌잡이수학</option><option>돌잡이영어</option><option>돌잡이명화</option>
+      </select>
+      <input type="number" id="logMinutes" placeholder="시간(분)" min="1" style="width:100%; margin-bottom:8px;">
+      <textarea id="logMemo" placeholder="아이 반응 / 따라 한 말 / 메모" rows="2" style="width:100%; margin-bottom:8px;"></textarea>
+      <button class="primary" onclick="addLog()" style="width:100%;">기록하기</button>
+    </div>
+    <div id="logList"></div>
+  </div>
+
+  <div class="section" id="recommend">
+    <h2 style="margin-bottom:12px; font-size:1.1rem;">💡 관련 책 추천</h2>
+    <div class="card">
+      <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:8px;">읽은 책이나 관심 주제를 선택하면 관련 책을 추천합니다.</p>
+      <select id="recBase" style="width:100%; margin-bottom:8px;" onchange="showRecommendations()">
+        <option value="">추천 기준 선택</option>
+        <option value="language">언어 발달 (말하기, 영아다중)</option>
+        <option value="sensory">오감/조작 (영아다중, 돌잡이)</option>
+        <option value="english">영어 입문 (노부영, 돌잡이영어)</option>
+        <option value="nature">자연/동물 (놀라운자연, 영아다중)</option>
+        <option value="daily">일상 생활 (말하기, 돌잡이한글)</option>
+      </select>
+    </div>
+    <div id="recList"></div>
+  </div>
+
+  <div class="section" id="settings">
+    <div class="card">
+      <h3 style="margin-bottom:8px;">데이터 관리</h3>
+      <p style="font-size:0.85rem; color:var(--text-light); margin-bottom:12px;">모든 데이터는 이 기기에만 저장됩니다.</p>
+      <button class="primary" onclick="exportData()" style="width:100%; margin-bottom:8px;">데이터 내보내기 (JSON)</button>
+      <button class="primary" onclick="document.getElementById('importFile').click()" style="width:100%; background:#666;">데이터 가져오기</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:8px;">아이 정보</h3>
+      <p>생년월일: 2025년 4월 29일</p>
+      <p>현재: 약 18개월 (2026년 10월 기준)</p>
+    </div>
+  </div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="active" data-view="inventory"><span class="icon">📚</span>인벤토리</button>
+  <button data-view="bilingual"><span class="icon">🌍</span>영어</button>
+  <button data-view="checklist"><span class="icon">✅</span>체크</button>
+  <button data-view="dev"><span class="icon">🧠</span>발달</button>
+  <button data-view="roadmap"><span class="icon">🗺️</span>로드맵</button>
+  <button data-view="planner"><span class="icon">📅</span>플래너</button>
+  <button data-view="log"><span class="icon">📝</span>기록</button>
+  <button data-view="recommend"><span class="icon">💡</span>추천</button>
+  <button data-view="settings"><span class="icon">⚙️</span>설정</button>
+</nav>
+
+<script>
+const SERIES = {
+  yeonga: { name: "프뢰벨 영아다중", books: ["공놀이해요","둥둥둥","알록달록한 먹보 아기뱀","킁킁킁","내 친구 푸푸","누가 먹나요?","돌리야 어디 있니?","사랑해요","빨간 공처럼","쉿, 조용조용!","이렇게 인사해요","샌드위치 만들기","무엇을 할까요?","안녕!","장난꾸러기 아기곰","토끼 귀는 쫑긋쫑긋","내 변기는 마술상자","모두모두 제자리에","숲속의 음악회","아기곰아, 다 입었니?","누가 더 높이 있을까요?","누구를 만났을까요?","먹보 아기뱀 가족","큰 케이크 작은 케이크","엄마닭은 꼬꼬댁 꼬꼬","엄마랑 아기랑","우리 엄마일까?","함께 떠나자","곧 알게 될 거야","무엇을 그릴까요?","물고기를 잡아요","하나만 줄래?"] },
+  malhagi: { name: "프뢰벨 말하기", books: ["와글와글","음매음매","전화가 울리면","따르릉따르릉","고마워!","미안해!","안녕히 주무세요!","주세요!","내가 도와줄게!","나처럼 말해요!","혼자 할 수 있어요","무엇이 될까?","눈, 눈, 누구 눈?","길을 걸어가다가","사과 줄게, 빨강 줄래?","꼭꼭 숨어라!","별 하나","앞에 가는 고릴라","해야 해야, 나와라!","똑똑똑, 누구십니까?"] },
+  nobuyoung: { name: "노부영 베이비베스트", books: ["10 Button Book","A Parade of Elephants","Baby's Busy World","Color Zoo","Does a Kangaroo Have a Mother Too?","Goodnight Moon","Helen Oxenbury's Big Baby Book","Hush Little Baby","Lemons Are Not Red","Nighty Night, Little Green Monster","Noisy Peekaboo! Choo Choo!","Nursery Rhymes","Splish, Splash, Ducky!","Welcome, Baby!","Whose Baby Am I?"] },
+  aram: { name: "아람 베이비올", books: ["베이비올 아기 (통합발달)","신체운동 영역","의사소통 영역","사회관계 영역","자연탐구 영역","예술경험 영역","기본생활 영역"] },
+  nature: { name: "놀라운자연", books: ["보드북 시리즈 (자연아, 놀자!)","나야, 나! 멍멍","앗! 호랑이다","내 이름은 토끼","잠꾸러기 코알라","따끔따끔 고슴도치","낙타가 최고야!"] },
+  dolhangeul: { name: "돌잡이 한글", books: ["색깔","도형","무늬","모양","우리몸","몸짓","장난감","놀이","골고루 냠냠","아이, 맛있어","똑똑똑","잘자요","입어요","엄마 아빠","인사해요","웃어요, 울어요","비켜나세요","동물원 구경","뛰어요","위험해요"] },
+  dolmath: { name: "돌잡이 수학", books: Array.from({length:12}, (_,i)=>`수학 그림책 ${i+1}`) },
+  doleng: { name: "돌잡이 영어", books: ["Are You Okay?","Happy Birthday!","What Shape Is It?","Come With Me!","How's the Weather?","그림책 6","그림책 7","그림책 8","그림책 9","그림책 10","Mother Goose"] },
+  dolart: { name: "돌잡이 명화", books: Array.from({length:10}, (_,i)=>`명화 그림책 ${i+1}`) }
+};
+
+const RECS = {
+  language: [
+    {title: "고마워!", series: "말하기", reason: "핵심 생활 표현"},
+    {title: "주세요!", series: "말하기", reason: "요청 표현 연습"},
+    {title: "장난꾸러기 아기곰", series: "영아다중", reason: "조작 + 어휘"},
+    {title: "안녕!", series: "영아다중", reason: "인사 표현"}
+  ],
+  sensory: [
+    {title: "킁킁킁", series: "영아다중", reason: "후각 자극"},
+    {title: "공놀이해요", series: "영아다중", reason: "촉감/조작"},
+    {title: "10 Button Book", series: "노부영", reason: "단추 조작"},
+    {title: "색깔", series: "돌잡이한글", reason: "감각 놀이"}
+  ],
+  english: [
+    {title: "Nursery Rhymes", series: "노부영", reason: "리듬감 있는 동요"},
+    {title: "Goodnight Moon", series: "노부영", reason: "반복 구조"},
+    {title: "Happy Birthday!", series: "돌잡이영어", reason: "일상 영어"},
+    {title: "Are You Okay?", series: "돌잡이영어", reason: "감정 표현"}
+  ],
+  nature: [
+    {title: "나야, 나! 멍멍", series: "놀라운자연", reason: "동물 소리"},
+    {title: "엄마닭은 꼬꼬댁 꼬꼬", series: "영아다중", reason: "동물 의성어"},
+    {title: "앗! 호랑이다", series: "놀라운자연", reason: "동물 특징"},
+    {title: "동물원 구경", series: "돌잡이한글", reason: "동물 이름"}
+  ],
+  daily: [
+    {title: "입어요", series: "돌잡이한글", reason: "옷 입기"},
+    {title: "잘자요", series: "돌잡이한글", reason: "수면 루틴"},
+    {title: "샌드위치 만들기", series: "영아다중", reason: "식사 놀이"},
+    {title: "안녕히 주무세요!", series: "말하기", reason: "잠자리 인사"}
+  ]
+};
+
+let state = JSON.parse(localStorage.getItem('babyReading') || '{"books":{},"plans":[],"logs":[]}');
+function save() { localStorage.setItem('babyReading', JSON.stringify(state)); }
+function getBookKey(series, title) { return `${series}::${title}`; }
+
+function renderInventory(filterSeries = 'all', query = '') {
+  const list = document.getElementById('bookList');
+  list.innerHTML = '';
+  let total = 0, owned = 0, read = 0;
+  Object.entries(SERIES).forEach(([key, s]) => {
+    if (filterSeries !== 'all' && filterSeries !== key) return;
+    s.books.forEach(title => {
+      if (query && !title.toLowerCase().includes(query.toLowerCase())) return;
+      total++;
+      const bk = getBookKey(key, title);
+      const data = state.books[bk] || { owned: false, status: '안 읽음', reaction: '' };
+      if (data.owned) owned++;
+      if (data.status === '읽음') read++;
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-header">
+          <div><div class="book-title">${title}</div><div class="book-meta">${s.name}</div></div>
+          <span class="badge">${key}</span>
+        </div>
+        <div class="controls">
+          <select onchange="updateBook('${bk}','owned',this.value)">
+            <option value="false" ${!data.owned?'selected':''}>미보유</option>
+            <option value="true" ${data.owned?'selected':''}>보유</option>
+          </select>
+          <select onchange="updateBook('${bk}','status',this.value)">
+            <option ${data.status==='안 읽음'?'selected':''}>안 읽음</option>
+            <option ${data.status==='읽는 중'?'selected':''}>읽는 중</option>
+            <option ${data.status==='읽음'?'selected':''}>읽음</option>
+          </select>
+          <select onchange="updateBook('${bk}','reaction',this.value)">
+            <option value="">반응</option>
+            <option ${data.reaction==='좋아함'?'selected':''}>좋아함</option>
+            <option ${data.reaction==='보통'?'selected':''}>보통</option>
+            <option ${data.reaction==='관심 없음'?'selected':''}>관심 없음</option>
+          </select>
+        </div>`;
+      list.appendChild(card);
+    });
+  });
+  document.getElementById('stats').innerHTML = `
+    <div class="stat-box"><div class="num">${total}</div><div class="label">전체</div></div>
+    <div class="stat-box"><div class="num">${owned}</div><div class="label">보유</div></div>
+    <div class="stat-box"><div class="num">${read}</div><div class="label">읽음</div></div>
+    <div class="stat-box"><div class="num">${total?Math.round(read/total*100):0}%</div><div class="label">진행률</div></div>`;
+  if (total === 0) list.innerHTML = '<div class="empty">검색 결과가 없습니다</div>';
+}
+function updateBook(key, field, value) {
+  if (!state.books[key]) state.books[key] = { owned: false, status: '안 읽음', reaction: '' };
+  if (field === 'owned') state.books[key].owned = value === 'true';
+  else state.books[key][field] = value;
+  save();
+  renderInventory(currentSeries, document.getElementById('searchInput').value);
+}
+let currentSeries = 'all';
+document.getElementById('seriesTabs').addEventListener('click', e => {
+  if (e.target.classList.contains('tab')) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    e.target.classList.add('active');
+    currentSeries = e.target.dataset.series;
+    renderInventory(currentSeries, document.getElementById('searchInput').value);
+  }
+});
+document.getElementById('searchInput').addEventListener('input', e => renderInventory(currentSeries, e.target.value));
+
+function renderPlans() {
+  const list = document.getElementById('planList');
+  const today = new Date().toISOString().slice(0,10);
+  const plans = (state.plans || []).sort((a,b) => b.date.localeCompare(a.date));
+  if (!plans.length) { list.innerHTML = '<div class="empty">아직 계획이 없습니다</div>'; return; }
+  let html = '', lastDate = '';
+  plans.forEach((p, i) => {
+    if (p.date !== lastDate) {
+      html += `<div class="day-header">${p.date === today ? '오늘' : p.date}</div>`;
+      lastDate = p.date;
+    }
+    html += `<div class="plan-item">
+      <div style="display:flex;justify-content:space-between;"><strong>${p.title}</strong><button onclick="deletePlan(${i})" style="border:none;background:none;color:#999;">삭제</button></div>
+      <div style="font-size:0.85rem;color:#666;">${p.series || ''} · ${p.note || ''}</div>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+function addPlan() {
+  const title = document.getElementById('planTitle').value.trim();
+  if (!title) return alert('책 제목을 입력하세요');
+  if (!state.plans) state.plans = [];
+  state.plans.push({
+    date: document.getElementById('planDate').value || new Date().toISOString().slice(0,10),
+    title, series: document.getElementById('planSeries').value,
+    note: document.getElementById('planNote').value
+  });
+  save();
+  document.getElementById('planTitle').value = '';
+  document.getElementById('planNote').value = '';
+  renderPlans();
+}
+function deletePlan(i) { state.plans.splice(i,1); save(); renderPlans(); }
+
+function renderLogs() {
+  const list = document.getElementById('logList');
+  const logs = (state.logs || []).slice().reverse();
+  if (!logs.length) { list.innerHTML = '<div class="empty">아직 기록이 없습니다</div>'; return; }
+  let html = '', lastDate = '';
+  logs.forEach((l, idx) => {
+    if (l.date !== lastDate) {
+      html += `<div class="day-header">${l.date}</div>`;
+      lastDate = l.date;
+    }
+    html += `<div class="log-item">
+      <div style="display:flex;justify-content:space-between;"><strong>${l.title}</strong><span style="color:#999;font-size:0.8rem;">${l.minutes||0}분</span></div>
+      <div style="font-size:0.85rem;color:#666;">${l.series || ''}</div>
+      <div style="margin-top:4px;">${l.memo || ''}</div>
+      <button onclick="deleteLog(${state.logs.length-1-idx})" style="margin-top:6px;border:none;background:none;color:#E74C3C;font-size:0.8rem;">삭제</button>
+    </div>`;
+  });
+  list.innerHTML = html;
+}
+function addLog() {
+  const title = document.getElementById('logTitle').value.trim();
+  if (!title) return alert('책 제목을 입력하세요');
+  if (!state.logs) state.logs = [];
+  state.logs.push({
+    date: document.getElementById('logDate').value || new Date().toISOString().slice(0,10),
+    title, series: document.getElementById('logSeries').value,
+    minutes: document.getElementById('logMinutes').value,
+    memo: document.getElementById('logMemo').value
+  });
+  save();
+  document.getElementById('logTitle').value = '';
+  document.getElementById('logMemo').value = '';
+  renderLogs();
+}
+function deleteLog(i) { state.logs.splice(i,1); save(); renderLogs(); }
+
+function showRecommendations() {
+  const key = document.getElementById('recBase').value;
+  const list = document.getElementById('recList');
+  if (!key || !RECS[key]) { list.innerHTML = ''; return; }
+  list.innerHTML = RECS[key].map(r => `
+    <div class="rec-item">
+      <div class="book-title">${r.title}</div>
+      <div class="book-meta">${r.series}</div>
+      <div style="margin-top:6px;"><span class="rec-tag">${r.reason}</span></div>
+    </div>
+  `).join('');
+}
+
+function renderRoadmap() {
+  const container = document.getElementById('roadmapOverview');
+  const roadmap = [
+    {week:1, month:18, theme:"생활 표현", focus:"주세요 / 고마워", books:["주세요!","고마워!","장난꾸러기 아기곰"], activity:"따라 말하기"},
+    {week:2, month:18, theme:"감각 놀이", focus:"색깔·모양", books:["색깔","도형","킁킁킁"], activity:"촉감 탐색"},
+    {week:3, month:18, theme:"동물 소리", focus:"의성어", books:["와글와글","음매음매","나야 나! 멍멍"], activity:"흉내 내기"},
+    {week:4, month:18, theme:"일상 루틴", focus:"잘자요 / 입어요", books:["잘자요","입어요","안녕히 주무세요!"], activity:"잠자리·옷 입기"},
+    {week:5, month:19, theme:"숫자 감각", focus:"하나 둘", books:["10 Button Book","수학 그림책 1"], activity:"세기 놀이"},
+    {week:6, month:19, theme:"인사·사회", focus:"안녕 / 인사해요", books:["안녕!","인사해요","Are You Okay?"], activity:"인사 연습"},
+    {week:7, month:19, theme:"자연 탐구", focus:"동물·식물", books:["앗! 호랑이다","동물원 구경"], activity:"그림 가리키기"},
+    {week:8, month:19, theme:"영어 리듬", focus:"Nursery Rhymes", books:["Nursery Rhymes","Happy Birthday!"], activity:"노래 따라 하기"}
+  ];
+  container.innerHTML = roadmap.map(r => `
+    <div class="card" style="border-left:4px solid var(--primary);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <strong style="color:var(--primary);">${r.week}주차 · ${r.month}개월</strong>
+        <span class="badge">${r.theme}</span>
+      </div>
+      <div style="margin:8px 0; font-weight:600;">${r.focus}</div>
+      <div style="font-size:0.85rem; color:var(--text-light);">추천: ${r.books.join(', ')}</div>
+      <div style="margin-top:6px; font-size:0.85rem;">활동: ${r.activity}</div>
+    </div>
+  `).join('');
+}
+function renderDev() {
+  const container = document.getElementById('devContent');
+  const areas = [
+    {
+      area: "소근육",
+      milestones: ["블록 3~4개 쌓기", "색연필 중간 부분 잡고 끼적이기", "숟가락으로 먹기 시도", "단추·구멍 맞추기"],
+      goals: ["블록 쌓기 놀이 (돌잡이 수학/조작북)", "단추책 넘기기 (노부영 10 Button)", "촉감 탐색 (영아다중 킁킁킁)"],
+      books: "공놀이해요, 색깔, 10 Button Book"
+    },
+    {
+      area: "인지",
+      milestones: ["간단한 지시 따르기 ('주세요')", "사물 분류·짝 맞추기 시작", "일상 루틴 인지", "상징 놀이 싹틈"],
+      goals: ["'주세요' 표현 따라 하기", "색깔·모양 찾기 놀이", "숨은 물건 찾기"],
+      books: "주세요!, 도형, 장난꾸러기 아기곰"
+    },
+    {
+      area: "언어",
+      milestones: ["단어 수 급증 (50개 내외)", "두 단어 조합 시도", "의성어·흉내 말 즐김", "그림 가리키며 이름 말하기"],
+      goals: ["생활 표현 반복 (고마워/주세요)", "동물 소리 흉내 내기", "책 보고 단어 따라 하기"],
+      books: "고마워!, 와글와글, 나야 나! 멍멍"
+    },
+    {
+      area: "사회·정서",
+      milestones: ["자율성 증가 ('내가 할래')", "간단한 흉내 놀이", "부모와 합동 주시", "감정 표현 다양화"],
+      goals: ["인사 놀이 (안녕/인사해요)", "역할 흉내 (엄마 아빠)", "함께 책 읽기"],
+      books: "안녕!, 인사해요, 엄마 아빠"
+    },
+    {
+      area: "대근육",
+      milestones: ["혼자 걷기·뛰기", "계단 오르기 시도", "공 차기", "균형 잡기"],
+      goals: ["공 굴리기·차기", "계단 오르기 놀이", "따라 걷기"],
+      books: "뛰어요, 공놀이해요"
+    }
+  ];
+  container.innerHTML = areas.map(a => `
+    <div class="card" style="border-left:4px solid #E67E22;">
+      <div style="font-weight:700; color:#E67E22; margin-bottom:6px;">${a.area}</div>
+      <div style="font-size:0.85rem; margin-bottom:4px;"><strong>발달 지표:</strong> ${a.milestones.join(' · ')}</div>
+      <div style="font-size:0.85rem; margin-bottom:4px;"><strong>놀이 목표:</strong> ${a.goals.join(' · ')}</div>
+      <div style="font-size:0.8rem; color:var(--text-light);">관련 책: ${a.books}</div>
+    </div>
+  `).join('');
+}
+const CHECKLISTS = {
+  18: [
+    {area:"소근육", items:["블록 3개 이상 쌓기","색연필로 끼적이기","숟가락으로 먹기 시도","단추 구멍 맞추기"]},
+    {area:"인지", items:["'주세요' 지시 따르기","색깔 2가지 구분","숨은 물건 찾기","일상 순서 인지"]},
+    {area:"언어", items:["의미 있는 단어 10개 이상","의성어 따라 하기","그림 가리키며 말하기","두 단어 시도"]},
+    {area:"사회", items:["안녕 인사하기","혼자 걷기","부모와 눈 맞추기","간단한 흉내 놀이"]}
+  ],
+  19: [
+    {area:"소근육", items:["블록 4개 쌓기","크레용 쥐기 안정","작은 물건 집어 넣기","페이지 넘기기"]},
+    {area:"인지", items:["같은 것 짝 맞추기","간단한 퍼즐","크기 비교 시작","반복 놀이 즐김"]},
+    {area:"언어", items:["단어 20개 내외","동물 소리 흉내","책 제목 따라 하기","원하는 것 말로 표현"]},
+    {area:"사회", items:["다른 아이 관심","함께 공 굴리기","감정 표현 다양","부모 따라 하기"]}
+  ],
+  20: [
+    {area:"소근육", items:["블록 탑 쌓기","선 그리기 시도","단추 끼우기","퍼즐 조각 맞추기"]},
+    {area:"인지", items:["분류 놀이","숫자 1-3 인지","숨바꼭질 즐김","원인-결과 이해"]},
+    {area:"언어", items:["두 단어 조합","질문 흉내","노래 따라 부르기","이름 말하기"]},
+    {area:"사회", items:["역할 놀이 시작","차례 기다리기 시도","친구에게 관심","감정 공감"]}
+  ],
+  21: [
+    {area:"소근육", items:["블록 5개 쌓기","동그라미 그리기 시도","집게로 집기","스티커 붙이기"]},
+    {area:"인지", items:["색깔 3가지 이상","모양 맞추기","간단한 순서","기억 놀이"]},
+    {area:"언어", items:["단어 30개 이상","짧은 문장 시도","책 내용 질문","의태어 사용"]},
+    {area:"사회", items:["함께 놀이 즐김","양보 시도","인사 자연스럽게","자존감 표현"]}
+  ],
+  22: [
+    {area:"소근육", items:["블록 구조물 만들기","그림 그리기 집중","구멍에 끼우기","종이 찢기 놀이"]},
+    {area:"인지", items:["숫자 세기 시작","같은/다른 구분","문제 해결 시도","상상 놀이"]},
+    {area:"언어", items:["두세 단어 문장","이야기 듣기","따라 말하기 능숙","감정 단어 사용"]},
+    {area:"사회", items:["또래와 상호작용","규칙 이해 시작","도움 요청","자신감 증가"]}
+  ],
+  23: [
+    {area:"소근육", items:["블록 6개 이상","색칠 놀이","끈 끼우기","정교한 잡기"]},
+    {area:"인지", items:["숫자 1-5","분류 능숙","순서 기억","창의적 놀이"]},
+    {area:"언어", items:["짧은 대화","책 내용 이해","질문하기","노래 가사 기억"]},
+    {area:"사회", items:["친구와 협력","감정 조절 시도","칭찬에 반응","독립 놀이"]}
+  ],
+  24: [
+    {area:"소근육", items:["블록 6~8개 탑 쌓기","원 그리기","퍼즐 4~6조각 완성","숟가락·포크 사용","단추 끼우기","스티커 정교하게 붙이기"]},
+    {area:"인지", items:["숫자 1-5 안정적 인식","색깔 5가지 이상 구분","원인-결과 이해","간단한 분류","순서 기억","상상 놀이"]},
+    {area:"언어", items:["3단어 이상 문장","이야기 따라 하기","질문에 대답","어휘 100개 이상","노래 가사 기억","이름·나이 말하기"]},
+    {area:"사회·정서", items:["또래와 함께 놀이","차례 지키기 시도","감정 표현 적절","자율성 확립","도움 요청","칭찬에 긍정적 반응"]},
+    {area:"대근육", items:["뛰기·점프","계단 오르내리기","공 차기","균형 잡기","따라 걷기"]}
+  ],
+  30: [
+    {area:"소근육", items:["블록으로 구조물 만들기","동그라미·선 그리기","퍼즐 8조각 이상","가위 사용 시도","단추·지퍼 조작","정교한 집기"]},
+    {area:"인지", items:["숫자 1-10 인식","색깔·모양 분류","간단한 규칙 이해","기억력 향상","문제 해결","상상 놀이 확장"]},
+    {area:"언어", items:["4단어 이상 문장","이야기 하기","질문하기","어휘 200개 내외","대화 주고받기","감정 단어 사용"]},
+    {area:"사회·정서", items:["또래와 협력 놀이","차례·규칙 지키기","감정 조절 시도","독립심 증가","공감 표현","자신감"]},
+    {area:"대근육", items:["점프·한발 뛰기 시도","계단 자유롭게","공 던지고 받기","균형 잡기 향상","따라 뛰기"]}
+  ]
+};
+
+function renderChecklist() {
+  const month = document.getElementById('monthSelect').value;
+  const data = CHECKLISTS[month] || [];
+  const key = `check_${month}`;
+  if (!state[key]) state[key] = {};
+  const container = document.getElementById('checklistContent');
+  container.innerHTML = data.map(section => `
+    <div class="card">
+      <div style="font-weight:700; color:var(--primary); margin-bottom:8px;">${section.area}</div>
+      ${section.items.map((item, i) => {
+        const id = `${key}_${section.area}_${i}`;
+        const checked = state[key][id] ? 'checked' : '';
+        return `<label style="display:flex;align-items:center;gap:8px;margin:6px 0;font-size:0.9rem;">
+          <input type="checkbox" ${checked} onchange="toggleCheck('${key}','${id}',this.checked)">
+          ${item}
+        </label>`;
+      }).join('')}
+    </div>
+  `).join('');
+}
+function toggleCheck(key, id, val) {
+  if (!state[key]) state[key] = {};
+  state[key][id] = val;
+  save();
+}
+function renderBilingual() {
+  const container = document.getElementById('bilingualContent');
+  container.innerHTML = `
+    <div class="card" style="border-left:4px solid #27AE60;">
+      <div style="font-weight:700; color:#27AE60; margin-bottom:6px;">핵심 원칙</div>
+      <div style="font-size:0.85rem;">
+        · 언어는 한 세션에 한 가지로 (섞지 않기)<br>
+        · 매일 짧은 노출이 효과적 (5~15분)<br>
+        · 그림 가리키며 단어 연결<br>
+        · 반복·리듬 있는 책 우선<br>
+        · 재미와 상호작용이 핵심
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; color:var(--primary); margin-bottom:6px;">주간 영어 노출 플랜</div>
+      <div style="font-size:0.85rem;">
+        <strong>월·수·금</strong> 노부영 (Nursery Rhymes, Goodnight Moon 등)<br>
+        <strong>화·목</strong> 돌잡이 영어 (Are You Okay?, Happy Birthday!)<br>
+        <strong>토</strong> 영어 동요 + 그림 가리키기<br>
+        <strong>일</strong> 자유 (아이 선택)
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:6px;">추천 시작 책</div>
+      <div style="font-size:0.85rem;">
+        · Nursery Rhymes (리듬·반복)<br>
+        · Goodnight Moon (반복 구조)<br>
+        · 10 Button Book (조작 + 숫자)<br>
+        · Happy Birthday! (일상 표현)<br>
+        · Are You Okay? (감정)
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:6px;">읽기 팁</div>
+      <div style="font-size:0.85rem;">
+        1. 같은 책을 며칠 반복<br>
+        2. 그림 가리키며 단어만 먼저<br>
+        3. 아이 반응 따라 속도 조절<br>
+        4. 한국어 책과 영어 책을 같은 날 섞지 않기<br>
+        5. 바나펜/CD 활용 가능
+      </div>
+    </div>
+  `;
+}
+function renderLetters() {
+  const container = document.getElementById('lettersContent');
+  container.innerHTML = `
+    <div class="card" style="border-left:4px solid #9B59B6;">
+      <div style="font-weight:700; color:#9B59B6; margin-bottom:6px;">시기 가이드</div>
+      <div style="font-size:0.85rem;">
+        <strong>한글</strong><br>
+        · 관심 보이면 4~5세부터 자연스럽게<br>
+        · 본격 떼기는 보통 5~7세<br>
+        · 통문자(이름·간판) → 자모 조합 순서<br><br>
+        <strong>알파벳</strong><br>
+        · 2~3세: 이름 첫 글자, ABC 노래<br>
+        · 3~4세: 대문자 인식 증가<br>
+        · 4~5세: 소리 연결 시작
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:6px;">18개월 지금 할 일</div>
+      <div style="font-size:0.85rem;">
+        · 글자 강제 학습 금지<br>
+        · 그림책 함께 보기 (글자 가리키기 X)<br>
+        · 이름 글자 자연 노출 (옷, 컵 등)<br>
+        · ABC 노래, 한글 동요 듣기<br>
+        · 소근육 놀이로 연필 쥐기 준비
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:6px;">관심 보일 때 방법</div>
+      <div style="font-size:0.85rem;">
+        1. 이름 글자부터 (통문자)<br>
+        2. 좋아하는 책 제목 가리키기<br>
+        3. 자석 글자·스티커로 놀이<br>
+        4. 쓰기보다 읽기·인식 먼저<br>
+        5. 재미 없으면 멈추기
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-weight:700; margin-bottom:6px;">관련 전집 활용</div>
+      <div style="font-size:0.85rem;">
+        · 돌잡이 한글: 색깔·도형·일상 단어<br>
+        · 노부영: 영어 리듬·반복<br>
+        · 말하기: 소리 놀이 기반
+      </div>
+    </div>
+  `;
+}
+document.querySelectorAll('.bottom-nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.bottom-nav button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.getElementById(btn.dataset.view).classList.add('active');
+    if (btn.dataset.view === 'letters') renderLetters();
+    if (btn.dataset.view === 'bilingual') renderBilingual();
+    if (btn.dataset.view === 'checklist') renderChecklist();
+    if (btn.dataset.view === 'dev') renderDev();
+    if (btn.dataset.view === 'roadmap') renderRoadmap();
+    if (btn.dataset.view === 'planner') renderPlans();
+    if (btn.dataset.view === 'log') renderLogs();
+  });
+});
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '아기독서데이터.json';
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try { state = JSON.parse(ev.target.result); save(); renderInventory(); alert('가져오기 완료'); }
+    catch { alert('파일 형식 오류'); }
+  };
+  reader.readAsText(file);
+}
+
+document.getElementById('logDate').valueAsDate = new Date();
+document.getElementById('planDate').valueAsDate = new Date();
+renderInventory();
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            if (confirm('새 버전이 있습니다. 업데이트할까요?')) {
+              newWorker.postMessage('skipWaiting');
+              window.location.reload();
+            }
+          }
+        });
+      });
+    });
+  });
+}
+</script>
+</body>
+</html>
